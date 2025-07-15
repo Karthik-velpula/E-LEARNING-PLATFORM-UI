@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnHub - Online Learning Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge::after {
+            content: '3';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0;
+        }
+
+        .nav-tabs ul {
+            list-style: none;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-tabs li {
+            margin-right: 2rem;
+        }
+
+        .nav-tabs a {
+            display: block;
+            padding: 1rem 0;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs a:hover,
+        .nav-tabs a.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+            min-height: calc(100vh - 140px);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.blue { background: #dbeafe; color: #3b82f6; }
+        .stat-icon.green { background: #dcfce7; color: #22c55e; }
+        .stat-icon.purple { background: #f3e8ff; color: #a855f7; }
+        .stat-icon.orange { background: #fed7aa; color: #f97316; }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Course Grid */
+        .courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .courses-header h2 {
+            color: #1e293b;
+            font-size: 1.8rem;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 300px;
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: #5a67d8;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
+
+        .course-thumbnail {
+            height: 180px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .course-duration {
+            position: absolute;
+            bottom: 0.75rem;
+            right: 0.75rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-category {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-instructor {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .course-progress {
+            margin-bottom: 1rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Video Player */
+        .video-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 400px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .play-button {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .video-controls {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .video-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-meta {
+            display: flex;
+            gap: 2rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-progress {
+            margin-bottom: 1rem;
+        }
+
+        .video-progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .video-progress-fill {
+            height: 100%;
+            background: #667eea;
+            border-radius: 4px;
+            width: 35%;
+            transition: width 0.3s ease;
+        }
+
+        /* Lesson Sidebar */
+        .lesson-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .lessons-sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .lessons-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+
+        .lesson-item:hover {
+            background: #f8fafc;
+        }
+
+        .lesson-item.active {
+            background: #f0f9ff;
+            border-left: 3px solid #667eea;
+        }
+
+        .lesson-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .lesson-item.completed .lesson-icon {
+            background: #dcfce7;
+            color: #22c55e;
+        }
+
+        .lesson-info h4 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 0.2rem;
+        }
+
+        .lesson-duration {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* Progress Tracking */
+        .progress-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-chart {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .circular-progress {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+        }
+
+        .progress-circle {
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .progress-bg {
+            stroke: #e2e8f0;
+        }
+
+        .progress-fg {
+            stroke: #667eea;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 113;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .achievement-list {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            background: #f8fafc;
+        }
+
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .achievement-icon.gold { background: #fef3c7; color: #f59e0b; }
+        .achievement-icon.silver { background: #f1f5f9; color: #6b7280; }
+        .achievement-icon.bronze { background: #fed7aa; color: #ea580c; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-tabs ul {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .nav-tabs li {
+                margin-right: 0;
+            }
+
+            .courses-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-section {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-player {
+                height: 250px;
+            }
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    📚 LearnHub
+                </div>
+                <div class="user-profile">
+                    <div class="notification-badge">🔔</div>
+                    <div class="user-avatar">👤</div>
+                    <span>Karthik</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+        <ul>
+            <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+            <li><a href="#" class="nav-link" data-page="courses">My Courses</a></li>
+            <li><a href="#" class="nav-link" data-page="browse">Browse Courses</a></li>
+            <li><a href="#" class="nav-link" data-page="watch">Watch Lesson</a></li>
+            <li><a href="#" class="nav-link" data-page="progress">Progress</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <h1 style="margin-bottom: 2rem; color: #1e293b;">Welcome back, Karthik! 👋</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">📚</div>
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Enrolled Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">✅</div>
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Completed Courses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">⚡</div>
+                        <div class="stat-number">47</div>
+                        <div class="stat-label">Learning Hours</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">🎯</div>
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <h2 style="margin-bottom: 1.5rem; color: #1e293b;">Continue Learning</h2>
+                    <div class="courses-grid">
+                        <div class="course-card">
+                            <div class="course-thumbnail">
+                                🚀
+                                <div class="course-duration">2h 30m left</div>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-category">Web Development</div>
+                                <h3 class="course-title">Advanced React Concepts</h3>
+                                <p class="course-instructor">by Sarah Johnson</p>
+                                <div class="course-progress">
+                                    <div class="progress-label">
+                                        <span>Progress</span>
+                                        <span>75%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                <div class="course-meta">
+                                    <div class="course-rating">
+                                        ⭐ 4.8 (234)
+                                    </div>
+                                    <div>12 lessons</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-card">
+                            <div class="course-thumbnail">
+                                🎨
+                                <div class="course-duration">1h 15m left</div>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-category">Design</div>
+                                <h3 class="course-title">UI/UX Design Principles</h3>
+                                <p class="course-instructor">by Mike Chen</p>
+                                <div class="course-progress">
+                                    <div class="progress-label">
+                                        <span>Progress</span>
+                                        <span>60%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                                <div class="course-meta">
+                                    <div class="course-rating">
+                                        ⭐ 4.9 (189)
+                                    </div>
+                                    <div>8 lessons</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Courses Page -->
+            <div id="courses" class="page">
+                <div class="courses-header">
+                    <h2>My Courses</h2>
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search your courses...">
+                        </div>
+                        <button class="filter-btn">Filter</button>
+                    </div>
+                </div>
+
+                <div class="courses-grid">
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            🚀
+                            <div class="course-duration">8h 45m</div>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-category">Web Development</div>
+                            <h3 class="course-title">Advanced React Concepts</h3>
+                            <p class="course-instructor">by Sarah Johnson</p>
+                            <div class="course-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>75%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div class="course-meta">
+                                <div class="course-rating">⭐ 4.8 (234)</div>
+                                <div>12 lessons</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            🎨
+                            <div class="course-duration">6h 20m</div>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-category">Design</div>
+                            <h3 class="course-title">UI/UX Design Principles</h3>
+                            <p class="course-instructor">by Mike Chen</p>
+                            <div class="course-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>60%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                            <div class="course-meta">
+                                <div class="course-rating">⭐ 4.9 (189)</div>
+                                <div>8 lessons</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            💻
+                            <div class="course-duration">10h 15m</div>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-category">Programming</div>
+                            <h3 class="course-title">Python for Data Science</h3>
+                            <p class="course-instructor">by Dr. Emily White</p>
+                            <div class="course-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>90%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div class="course-meta">
+                                <div class="course-rating">⭐ 4.7 (456)</div>
+                                <div>15 lessons</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            📊
+                            <div class="course-duration">5h 30m</div>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-category">Business</div>
+                            <h3 class="course-title">Digital Marketing Fundamentals</h3>
+                            <p class="course-instructor">by Alex Rodriguez</p>
+                            <div class="course-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>100%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="course-meta">
+                                <div class="course-rating">⭐ 4.6 (298)</div>
+                                <div>10 lessons</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Browse Courses Page -->
+            <div id="browse" class="page">
+                <div class="courses-header">
+                    <h2>Browse All Courses</h2>
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search courses...">
+                        </div>
+                        <button class="filter-btn">Filter by Category</button>
+                    </div>
+                </div>
+
+                <div class="courses-grid">
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            🤖
+                            <div class="course-duration">12h 30m</div>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-category">AI & Machine Learning</div>
+                            <h3 class="course-title">Introduction to Machine Learning</h3>
+                            <p class="course-instructor">by Dr. James Wilson</p>
+                            <div style="margin: 1rem 0;">
+                                <div style="color: #22c55e; font-weight: 600; font-size: 1.2rem;">$89.99</div>
+                            </div>
+                            <div class="course-meta">
+                                <div class="course-rating">⭐ 4.9 (1.2k)</div>
+                                <div>18 lessons</div>
+                            </div>
+                            <div style="margin-top: 1rem;">
