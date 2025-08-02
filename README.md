@@ -38,10 +38,6 @@ LearnHub is a responsive, modern online learning platform built using HTML and C
 - **CSS3 (Flexbox + Grid + Media Queries)**
 - Responsive design principles for all screen sizes.
 
-## 📷 Screenshots
-
-> Add screenshots here (optional) to visually showcase different sections like the dashboard, course cards, etc.
-
 ## 🛠️ Setup Instructions
 
 1. Clone the repository:
